@@ -1,4 +1,7 @@
 <?php
+// backend/config.php
+
+// Define env() solo una vez para evitar "Cannot redeclare env()"
 if (!function_exists('env')) {
     function env($key, $default = null) {
         static $vars = null;

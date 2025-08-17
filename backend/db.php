@@ -1,4 +1,5 @@
 <?php
+// backend/db.php
 $config = require __DIR__ . '/config.php';
 
 $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4',

@@ -4,7 +4,7 @@ System built with **PHP (Backend)**, **MySQL (Database)** and **Frontend (HTML+J
 
 ---
 
-#🇪🇸 Instrucciones en Español
+# 🇪🇸 Instrucciones en Español
 
 ## 📦 Requisitos
 - PHP 8+  

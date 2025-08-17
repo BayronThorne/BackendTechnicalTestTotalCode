@@ -11,7 +11,7 @@ services:
       MYSQL_USER: total
       MYSQL_PASSWORD: total
     ports:
-      - "3307:3306" 
+      - "3307:3306"        # opcional: si quieres acceder desde Workbench
     volumes:
       - db_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d:ro

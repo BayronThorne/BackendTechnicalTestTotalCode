@@ -25,7 +25,7 @@
   margin: 0;
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%); /* 🔥 Esto lo centra */
   font-size: 18px;
   font-weight: bold;
 }
@@ -46,15 +46,15 @@ body {
 .filters label {
   margin-right: 6px;
   font-weight: 500;
-  color: #7c7eec;
+  color: #7c7eec;   /* 👈 Color morado para los labels */
 }
 .filters select {
   margin-right: 14px;
   padding: 6px 10px;
-  border-radius: 12px; 
-  border: 2px solid #7c7eec; 
+  border-radius: 12px;       /* 🔵 Más redondeado */
+  border: 2px solid #7c7eec; /* Morado */
   outline: none;
-  background-color: #fff;
+  background-color: #fff;    /* Fondo blanco limpio */
   font-size: 14px;
 }
 
@@ -166,23 +166,76 @@ body {
   background-color: #f0f4ff;
   margin: 0;
   padding: 0;
-  color: #444;
+  color: #444; /* ✅ gris más suave en lugar de negro */
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #333; 
+  color: #333; /* un poquito más fuerte que el body */
 }
 
 label, .filters label {
-  color: #7c7eec;
+  color: #7c7eec; /* ✅ moradito para los labels */
 }
 
 .table-container td,
 .table-container th {
-  color: #444;
+  color: #444; /* ✅ gris suave en las tablas */
 }
 
 .total-row td {
   font-weight: bold;
-  color: #333;
+  color: #333; /* un poco más fuerte solo para el total */
+}
+
+.container { padding: 12px; }
+
+/* --- Paginación --- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #7c7eec; /* Morado para el texto general */
+}
+
+.pagination button {
+  background: #fff;
+  border: 1px solid #7c7eec; /* Borde morado */
+  color: #7c7eec;           /* Texto morado */
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination button:hover {
+  background: #7c7eec;
+  color: #fff; /* Se invierte al pasar el mouse */
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  color: #7c7eec; /* Morado para "Página 1 de 2" */
+  font-weight: 500;
+}
+
+.logout {
+  background: none;
+  border: none;
+  color: #7c7eec;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px; /* espacio entre texto e ícono */
+  font-size: 14px;
+}
+
+.logout i {
+  font-size: 16px; /* tamaño del icono */
 }

@@ -1,17 +1,34 @@
-const API_BASE = "http://localhost:8080/index.php";
+// app.js  (FRONTEND con paginación)
+
+// ====== CONFIG ======
+const API_BASE = "http://localhost:8080/index.php"; // backend
 const API_PATH = "/api/orders/summary";
-const TOKEN    = "mi_token_super_seguro";
+const TOKEN    = "mi_token_super_seguro";           // mismo que API_TOKEN en el backend
 
+// ====== STATE ======
+let state = {
+  page: 1,
+  perPage: 10,
+  totalPages: 1,
+  totalRows: 0,
+};
 
-const $tbody   = document.getElementById('tbody');     // <tbody id="tbody">
-const $count   = document.getElementById('count');     // span para (N) registros
-const $tOrders = document.getElementById('tOrders');   // total de órdenes
-const $tAmount = document.getElementById('tAmount');   // total de monto
-const $month   = document.getElementById('month');     // <select id="month">
-const $status  = document.getElementById('status');    // <select id="status">
-const $error   = document.getElementById('error');     // opcional: <div id="error"></div>
-const $loading = document.getElementById('loading');   // opcional: <div id="loading"></div>
+// ====== ELEMENTOS ======
+const $tbody     = document.getElementById('tbody');
+const $count     = document.getElementById('count');
+const $tOrders   = document.getElementById('tOrders');
+const $tAmount   = document.getElementById('tAmount');
+const $month     = document.getElementById('month');
+const $status    = document.getElementById('status');
+const $error     = document.getElementById('error');
+const $loading   = document.getElementById('loading');
 
+const $prevBtn   = document.getElementById('prevBtn');
+const $nextBtn   = document.getElementById('nextBtn');
+const $pageInfo  = document.getElementById('pageInfo');
+const $perPage   = document.getElementById('perPage');
+
+// ====== HELPERS ======
 function money(n) {
   const num = Number(n || 0);
   return '$ ' + Math.round(num).toLocaleString('es-CO');
@@ -28,12 +45,12 @@ function fetchWithAbort(url, opts = {}) {
   return fetch(url, { ...opts, signal: inflightController.signal });
 }
 
-const API_URL = "http://localhost:8080/index.php/api/orders/summary";
-async function fetchSummary(month, status) {
-  const qs = `?month=${encodeURIComponent(month)}&status=${encodeURIComponent(status)}`;
+// ====== API ======
+async function fetchSummary({ month, status, page, perPage }) {
+  const qs = `?month=${encodeURIComponent(month)}&status=${encodeURIComponent(status)}&page=${page}&per_page=${perPage}`;
   const url = `${API_BASE}${API_PATH}${qs}`;
 
-  const res = await fetch(url, {
+  const res = await fetchWithAbort(url, {
     headers: { Authorization: `Bearer ${TOKEN}` }
   });
 
@@ -41,32 +58,29 @@ async function fetchSummary(month, status) {
     const txt = await res.text().catch(() => '');
     throw new Error(`HTTP ${res.status} – ${txt.slice(0,200)}`);
   }
+
   return res.json();
 }
 
+// ====== RENDER ======
 function renderRows(rows) {
   $tbody.innerHTML = '';
-  $count.textContent = `(${rows.length})`;
-
   if (!rows.length) {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td colspan="3" class="center" style="color:#6b7280">No hay resultados</td>`;
     $tbody.appendChild(tr);
     return;
   }
-
   for (const r of rows) {
     const tr = document.createElement('tr');
-
     tr.innerHTML = `
       <td>
         <div style="font-weight:700">${r.client_name || '(Sin nombre)'}</div>
-        <div style="color:#6b7280; font-size:12px">${r.email}</div>
+        <div style="color:#6b7280; font-size:12px">${r.email ?? ''}</div>
       </td>
       <td class="num">${r.orders_count}</td>
       <td class="num">${money(r.total_amount)}</td>
     `;
-
     $tbody.appendChild(tr);
   }
 }
@@ -77,32 +91,75 @@ function renderTotals(totals) {
   $tAmount.textContent = money(t.total_amount ?? 0);
 }
 
+function renderPagination(pagination) {
+  const { page, per_page, total_pages, total_rows } = pagination;
+  state.page = page;
+  state.perPage = per_page;
+  state.totalPages = total_pages;
+  state.totalRows = total_rows;
+
+  if ($pageInfo) $pageInfo.textContent = `Página ${page} de ${total_pages}`;
+  if ($count) $count.textContent = `(${total_rows})`;
+
+  if ($prevBtn) $prevBtn.disabled = page <= 1;
+  if ($nextBtn) $nextBtn.disabled = page >= total_pages;
+
+  if ($perPage) {
+    const val = String(per_page);
+    if ($perPage.value !== val) $perPage.value = val;
+  }
+}
+
+// ====== FLUJO ======
 async function load() {
   try {
     clearError();
     showLoading();
 
-    const m = $month.value;
-    const s = $status.value;
+    const month = $month.value;
+    const status = $status.value;
 
-    const data = await fetchSummary(m, s);
+    const data = await fetchSummary({
+      month,
+      status,
+      page: state.page,
+      perPage: state.perPage
+    });
 
-    const rows = Array.isArray(data.rows) ? data.rows : [];
-    renderRows(rows);
+    renderRows(Array.isArray(data.rows) ? data.rows : []);
     renderTotals(data.totals);
+    renderPagination(data.pagination);
   } catch (err) {
     showError('No se pudo cargar la información.');
     console.error('[load] error:', err);
     renderRows([]);
     renderTotals({ orders_count: 0, total_amount: 0 });
+    renderPagination({ page: 1, per_page: state.perPage, total_pages: 1, total_rows: 0 });
   } finally {
     hideLoading();
   }
 }
 
+// ====== INIT ======
 document.addEventListener('DOMContentLoaded', () => {
+  // Carga inicial
   load();
 
-  $month.addEventListener('change', load);
-  $status.addEventListener('change', load);
+  // Filtros → resetear a página 1
+  $month.addEventListener('change', () => { state.page = 1; load(); });
+  $status.addEventListener('change', () => { state.page = 1; load(); });
+
+  // Paginación
+  if ($prevBtn) $prevBtn.addEventListener('click', () => {
+    if (state.page > 1) { state.page -= 1; load(); }
+  });
+  if ($nextBtn) $nextBtn.addEventListener('click', () => {
+    if (state.page < state.totalPages) { state.page += 1; load(); }
+  });
+  if ($perPage) $perPage.addEventListener('change', () => {
+    const n = parseInt($perPage.value, 10) || 10;
+    state.perPage = n;
+    state.page = 1;
+    load();
+  });
 });
