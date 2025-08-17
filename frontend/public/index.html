@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Total ERP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="Logo" class="logo">
+    </div>
+    <h0 class="product">ERP - TIENDA ROSATEL</h0>
+    <button class="logout">SALIR</button>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Clientes que han ordenado en la tienda</h2>
+
+      <div class="filters">
+        <div class="filter">
+          <label>Mes:</label>
+          <select id="month">
+            <option value="1">ENERO</option>
+            <option value="2">FEBRERO</option>
+            <option value="3">MARZO</option>
+            <option value="4">ABRIL</option>
+            <option value="5">MAYO</option>
+            <option value="6">JUNIO</option>
+            <option value="7">JULIO</option>
+            <option value="8">AGOSTO</option>
+            <option value="9">SEPTIEMBRE</option>
+            <option value="10" selected>OCTUBRE</option>
+            <option value="11">NOVIEMBRE</option>
+            <option value="12">DICIEMBRE</option>
+          </select>
+        </div>
+        <div class="filter">
+          <label>Estado:</label>
+          <select id="status">
+            <option value="0" selected>ABIERTAS</option>
+            <option value="3">ENVIADAS</option>
+            <option value="4">ENTREGADAS</option>
+            <option value="all">TODAS</option>
+          </select>
+        </div>
+        <div class="records">
+          Registros <span id="count">(0)</span>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>CLIENTE</th>
+              <th class="num">NÚMERO DE ORDENES</th>
+              <th class="num">MONTO ($ COP)</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot>
+            <tr>
+              <td><strong>TOTAL</strong></td>
+              <td class="num" id="tOrders">0</td>
+              <td class="num" id="tAmount">$ 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div id="loading" class="center" style="margin-top:10px;"></div>
+      <div id="error" class="center" style="margin-top:6px;color:#b91c1c;"></div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
