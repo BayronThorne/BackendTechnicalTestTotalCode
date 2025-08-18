@@ -1,57 +1,99 @@
-# 🚀 Total ERP – Full Stack Case
+# Total ERP – Full Stack Case
 
-System built with **PHP (Backend)**, **MySQL (Database)** and **Frontend (HTML+JS+CSS)**, fully deployable with **Docker**.
+Sistema construido con:
+- **Backend:** PHP 8  
+- **Base de datos:** MySQL 8  
+- **Frontend:** HTML + JS + CSS  
+- **Orquestación:** Docker y Docker Compose  
 
 ---
 
-# 🇪🇸 Instrucciones en Español
+# Instrucciones en Español
 
-## 📦 Requisitos
-- PHP 8+  
-- MySQL 8+  
-- Docker y Docker Compose  
+## Requisitos previos
 
-## ⚙️ Instalación con Docker
+Antes de empezar, asegúrate de tener instalado en tu máquina:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)  
+- [Git](https://git-scm.com/)  
 
-1. Clonar el proyecto:  
+No necesitas instalar PHP ni MySQL manualmente. Todo se levanta con Docker.
+
+---
+
+## Instalación paso a paso
+
+1. Clonar el repositorio  
    ```bash
    git clone <este-repo>
    cd TOTAL-ER-DOCKER2/docker
    ```
 
-2. Levantar servicios:  
+2. Levantar todos los servicios (base de datos, backend, frontend y phpMyAdmin):  
    ```bash
    docker-compose up -d
    ```
 
-3. La base de datos `totalcode` se crea automáticamente con datos de ejemplo desde `docker/mysql/init/`.  
+3. Verificar que los contenedores estén corriendo:  
+   ```bash
+   docker ps
+   ```
+   Debes ver:
+   - totalcode_db (MySQL)  
+   - totalcode_backend (PHP API)  
+   - totalcode_frontend (Nginx + HTML/JS)  
+   - totalcode_phpmyadmin (phpMyAdmin UI)  
 
-4. Acceder al **Frontend**:  
-   👉 [http://localhost:8081](http://localhost:8081)  
+4. Base de datos inicial  
+   - Se crea automáticamente totalcode con datos de prueba.  
+   - Los scripts están en docker/mysql/init/.  
 
-5. El **Backend/API** responde en:  
-   👉 [http://localhost:8080/index.php/api/orders/summary?month=10&status=0](http://localhost:8080/index.php/api/orders/summary?month=10&status=0)  
+5. Accesos principales  
+   - Frontend: http://localhost:8081  
+   - Backend/API: http://localhost:8080/index.php/api/orders/summary?month=10&status=0  
+   - phpMyAdmin: http://localhost:8082  
+     - Usuario: root  
+     - Contraseña: root  
 
-## 🔌 API
+---
 
-**Endpoint principal:**  
+## Uso paso a paso
+
+1. Entra al Frontend:  
+   http://localhost:8081  
+
+2. Selecciona Mes y Estado en los filtros:  
+   - Mes = Octubre, Estado = ABIERTAS  
+   - Se mostrará la lista de clientes, número de órdenes y montos.  
+
+3. Al cambiar filtros:
+   - El Frontend (JS) llama al Backend (PHP API).  
+   - El Backend consulta MySQL.  
+   - Se devuelven los resultados en formato JSON.  
+   - El Frontend renderiza la tabla con los datos.  
+
+---
+
+## API
+
+Endpoint principal:  
 ```
-GET /api/orders/summary?month=<1..12|nombre|all>&status=<0|3|4|all>
+GET /api/orders/summary?month=<1..12|all>&status=<0|3|4|all>
 ```
 
-- **month** → filtra por `MONTH(date_placed)`  
-- **status** →  
-  - `0` = ABIERTAS  
-  - `3` = ENVIADAS  
-  - `4` = ENTREGADAS  
-  - `all` = todas  
+### Parámetros
+- month → filtra por mes de la orden (1=Enero … 12=Diciembre, o all)  
+- status → estado de la orden:  
+  - 0 = ABIERTAS  
+  - 3 = ENVIADAS  
+  - 4 = ENTREGADAS  
+  - all = todas  
 
-**Respuesta JSON de ejemplo:**  
+### Ejemplo de respuesta JSON
 ```json
 {
   "filters": {"month": 10, "status": 0},
   "rows": [
-    {"client_name": "NOMBRE APELLIDO", "email": "x@x.com", "orders_count": 6, "total_amount": 1500000}
+    {"client_name": "JUAN PÉREZ", "email": "juan@correo.com", "orders_count": 6, "total_amount": 1500000}
   ],
   "totals": {"orders_count": 21, "total_amount": 1995000}
 }
@@ -59,49 +101,59 @@ GET /api/orders/summary?month=<1..12|nombre|all>&status=<0|3|4|all>
 
 ---
 
-# 🇬🇧 Instructions in English
+# Instructions in English
 
-## 📦 Requirements
-- PHP 8+  
-- MySQL 8+  
-- Docker and Docker Compose  
+## Requirements
+- Docker Desktop  
+- Git  
 
-## ⚙️ Installation with Docker
+You don’t need to manually install PHP or MySQL, everything runs in Docker.
 
-1. Clone the project:  
+---
+
+## Step-by-step installation
+
+1. Clone the repository:
    ```bash
    git clone <this-repo>
    cd TOTAL-ER-DOCKER2/docker
    ```
 
-2. Start services:  
+2. Start the services:
    ```bash
    docker-compose up -d
    ```
 
-3. The database `totalcode` will be created automatically with seed data from `docker/mysql/init/`.  
+3. Verify containers are running:
+   ```bash
+   docker ps
+   ```
 
-4. Access the **Frontend**:  
-   👉 [http://localhost:8081](http://localhost:8081)  
+4. Access points:
+   - Frontend: http://localhost:8081  
+   - Backend/API: http://localhost:8080/index.php/api/orders/summary?month=10&status=0  
+   - phpMyAdmin: http://localhost:8082  
+     - User: root  
+     - Password: root  
 
-5. The **Backend/API** is available at:  
-   👉 [http://localhost:8080/index.php/api/orders/summary?month=10&status=0](http://localhost:8080/index.php/api/orders/summary?month=10&status=0)  
+---
 
-## 🔌 API
+## API
 
-**Main endpoint:**  
+Main endpoint:  
 ```
-GET /api/orders/summary?month=<1..12|name|all>&status=<0|3|4|all>
+GET /api/orders/summary?month=<1..12|all>&status=<0|3|4|all>
 ```
 
-- **month** → filters by `MONTH(date_placed)`  
-- **status** →  
-  - `0` = OPEN  
-  - `3` = SHIPPED  
-  - `4` = DELIVERED  
-  - `all` = all  
+### Params
+- month → filter by order month  
+- status →  
+  - 0 = OPEN  
+  - 3 = SHIPPED  
+  - 4 = DELIVERED  
+  - all = all  
 
-**Sample JSON response:**  
+### Sample JSON response
 ```json
 {
   "filters": {"month": 10, "status": 0},
@@ -114,5 +166,5 @@ GET /api/orders/summary?month=<1..12|name|all>&status=<0|3|4|all>
 
 ---
 
-## 👤 Author / Autor
-Technical practice project – **TotalCode ERP**
+## Autor
+Prueba técnica – TotalCode ERP
